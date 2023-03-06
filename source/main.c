@@ -69,6 +69,18 @@ static void initSprites() {
 
 }
 
+void moveSprite(Sprite *spr, s16 dx, s16 dy) {
+	// stop sprite going OOB
+	if (spr->x >= SCREEN_WIDTH || spr->x < 1 || spr->y >= SCREEN_HEIGHT || spr->x < 1) {
+		return;
+	}
+
+	spr->x += dx;
+	spr->y += dy;
+
+	C2D_SpriteSetPos(&spr->spr, spr->x, spr->y);
+}
+
 int main(int argc, char* argv[]) {
 
 	// Init libs
@@ -103,6 +115,14 @@ int main(int argc, char* argv[]) {
 		u32 kDown = hidKeysDown();
 		if (kDown & KEY_START)
 			break; // break in order to return to hbmenu
+
+		// get circlepad position
+		circlePosition cpos;
+		hidCircleRead(&cpos);
+		// move spr based on it
+		moveSprite(&sprites[0], cpos.dx, cpos.dy);
+
+		printf("Bird Pos: %f, %f\n", sprites[0].x, sprites[0].y);
 			
 
 		// Render the scene
@@ -112,6 +132,13 @@ int main(int argc, char* argv[]) {
 
 		C2D_DrawSprite(&sprites[0].spr);
 		C3D_FrameEnd(0);
+
+		// // Flush and swap framebuffers
+		// gfxFlushBuffers();
+		// gfxSwapBuffers();
+
+		// //Wait for VBlank
+		// gspWaitForVBlank();
 	}
 
 	// Delete graphics
