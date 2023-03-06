@@ -20,9 +20,9 @@ typedef struct
 	float dx, dy; // velocity
 } Sprite;
 
+// init spritesheet
 static C2D_SpriteSheet spriteSheet;
 static Sprite sprites[MAX_SPRITES];
-static size_t numSprites = MAX_SPRITES/2;
 
 //---------------------------------------------------------------------------------
 static void initSprites() {
@@ -31,52 +31,35 @@ static void initSprites() {
 	srand(time(NULL));
 
 	for (size_t i = 0; i < MAX_SPRITES; i++)
-	{
-		Sprite* sprite = &sprites[i];
+	{	
+		Sprite* thisSprite = &sprites[i];
 
 		// Random image, position, rotation and speed
-		C2D_SpriteFromSheet(&sprite->spr, spriteSheet, rand() % numImages);
-		C2D_SpriteSetCenter(&sprite->spr, 0.5f, 0.5f);
-		C2D_SpriteSetPos(&sprite->spr, rand() % SCREEN_WIDTH, rand() % SCREEN_HEIGHT);
-		C2D_SpriteSetRotation(&sprite->spr, C3D_Angle(rand()/(float)RAND_MAX));
-		sprite->dx = rand()*4.0f/RAND_MAX - 2.0f;
-		sprite->dy = rand()*4.0f/RAND_MAX - 2.0f;
+	//  C2D_SpriteFromSheet(*Sprite, C2D_SpriteSheet, int);
+		C2D_SpriteFromSheet(&thisSprite->spr, spriteSheet, i);
+		C2D_SpriteSetCenter(&thisSprite->spr, 0.5f, 0.5f);
+		C2D_SpriteSetPos(&thisSprite->spr, rand() % SCREEN_WIDTH, rand() % SCREEN_HEIGHT);
+		// C2D_SpriteSetRotation(&sprite->spr, C3D_Angle(rand()/(float)RAND_MAX));
+		thisSprite->dx = rand()*4.0f/RAND_MAX - 2.0f;
+		thisSprite->dy = rand()*4.0f/RAND_MAX - 2.0f;
 	}
+
+
 }
 
-//---------------------------------------------------------------------------------
-static void moveSprites() {
-//---------------------------------------------------------------------------------
-	for (size_t i = 0; i < numSprites; i++)
-	{
-		Sprite* sprite = &sprites[i];
-		C2D_SpriteMove(&sprite->spr, sprite->dx, sprite->dy);
-		C2D_SpriteRotateDegrees(&sprite->spr, 1.0f);
-
-		// Check for collision with the screen boundaries
-		if ((sprite->spr.params.pos.x < sprite->spr.params.pos.w / 2.0f && sprite->dx < 0.0f) ||
-			(sprite->spr.params.pos.x > (SCREEN_WIDTH-(sprite->spr.params.pos.w / 2.0f)) && sprite->dx > 0.0f))
-			sprite->dx = -sprite->dx;
-
-		if ((sprite->spr.params.pos.y < sprite->spr.params.pos.h / 2.0f && sprite->dy < 0.0f) ||
-			(sprite->spr.params.pos.y > (SCREEN_HEIGHT-(sprite->spr.params.pos.h / 2.0f)) && sprite->dy > 0.0f))
-			sprite->dy = -sprite->dy;
-	}
-}
-
-//---------------------------------------------------------------------------------
 int main(int argc, char* argv[]) {
-//---------------------------------------------------------------------------------
+
 	// Init libs
 	romfsInit();
 	gfxInitDefault();
 	C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
 	C2D_Init(C2D_DEFAULT_MAX_OBJECTS);
 	C2D_Prepare();
-	consoleInit(GFX_BOTTOM, NULL);
+	// consoleInit(GFX_BOTTOM, NULL);
 
 	// Create screens
 	C3D_RenderTarget* top = C2D_CreateScreenTarget(GFX_TOP, GFX_LEFT);
+	C3D_RenderTarget* bottom = C2D_CreateScreenTarget(GFX_BOTTOM, GFX_LEFT);
 
 	// Load graphics
 	spriteSheet = C2D_SpriteSheetLoad("romfs:/gfx/sprites.t3x");
@@ -85,8 +68,6 @@ int main(int argc, char* argv[]) {
 	// Initialize sprites
 	initSprites();
 
-	printf("\x1b[8;1HPress Up to increment sprites");
-	printf("\x1b[9;1HPress Down to decrement sprites");
 
 	// Main loop
 	while (aptMainLoop())
@@ -97,26 +78,14 @@ int main(int argc, char* argv[]) {
 		u32 kDown = hidKeysDown();
 		if (kDown & KEY_START)
 			break; // break in order to return to hbmenu
-
-		u32 kHeld = hidKeysHeld();
-		if ((kHeld & KEY_UP) && numSprites < MAX_SPRITES)
-			numSprites++;
-		if ((kHeld & KEY_DOWN) && numSprites > 1)
-			numSprites--;
-
-		moveSprites();
-
-		printf("\x1b[1;1HSprites: %zu/%u\x1b[K", numSprites, MAX_SPRITES);
-		printf("\x1b[2;1HCPU:     %6.2f%%\x1b[K", C3D_GetProcessingTime()*6.0f);
-		printf("\x1b[3;1HGPU:     %6.2f%%\x1b[K", C3D_GetDrawingTime()*6.0f);
-		printf("\x1b[4;1HCmdBuf:  %6.2f%%\x1b[K", C3D_GetCmdBufUsage()*100.0f);
+			
 
 		// Render the scene
 		C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
 		C2D_TargetClear(top, C2D_Color32f(0.0f, 0.0f, 0.0f, 1.0f));
 		C2D_SceneBegin(top);
-		for (size_t i = 0; i < numSprites; i ++)
-			C2D_DrawSprite(&sprites[i].spr);
+
+		C2D_DrawSprite(&sprites[0].spr);
 		C3D_FrameEnd(0);
 	}
 
