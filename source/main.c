@@ -17,7 +17,7 @@
 typedef struct
 {
 	C2D_Sprite spr;
-	float dx, dy; // velocity
+	float x, y; // pos
 } Sprite;
 
 // init spritesheet
@@ -27,22 +27,44 @@ static Sprite sprites[MAX_SPRITES];
 //---------------------------------------------------------------------------------
 static void initSprites() {
 //---------------------------------------------------------------------------------
-	size_t numImages = C2D_SpriteSheetCount(spriteSheet);
-	srand(time(NULL));
+	// size_t numImages = C2D_SpriteSheetCount(spriteSheet);
+	// srand(time(NULL));
 
-	for (size_t i = 0; i < MAX_SPRITES; i++)
-	{	
-		Sprite* thisSprite = &sprites[i];
+	// for (size_t i = 0; i < MAX_SPRITES; i++)
+	// {	
+	// 	Sprite* thisSprite = &sprites[i];
 
-		// Random image, position, rotation and speed
-	//  C2D_SpriteFromSheet(*Sprite, C2D_SpriteSheet, int);
-		C2D_SpriteFromSheet(&thisSprite->spr, spriteSheet, i);
+	// 	// Random image, position, rotation and speed
+	// //  C2D_SpriteFromSheet(*Sprite, C2D_SpriteSheet, int);
+	// 	C2D_SpriteFromSheet(&thisSprite->spr, spriteSheet, i);
+	// 	C2D_SpriteSetCenter(&thisSprite->spr, 0.5f, 0.5f);
+	// 	C2D_SpriteSetPos(&thisSprite->spr, rand() % SCREEN_WIDTH, rand() % SCREEN_HEIGHT);
+	// 	// C2D_SpriteSetRotation(&sprite->spr, C3D_Angle(rand()/(float)RAND_MAX));
+	// 	thisSprite->dx = rand()*4.0f/RAND_MAX - 2.0f;
+	// 	thisSprite->dy = rand()*4.0f/RAND_MAX - 2.0f;
+	// }
+
+	// for (size_t i = 0; i < MAX_SPRITES; i++) {
+	// 	Sprite* thisSprite = &sprites[i];
+	// 	float x = rand() % SCREEN_WIDTH;
+	// 	float y = rand() % SCREEN_HEIGHT;
+
+	// 	C2D_SpriteFromSheet(&thisSprite->spr, spriteSheet, i);
+	// 	C2D_SpriteSetCenter(&thisSprite->spr, 0.5f, 0.5f);
+	// 	C2D_SpriteSetPos(&thisSprite->spr, x, y);
+	// 	thisSprite->x = x;
+	// 	thisSprite->y = y;
+	// }
+
+		Sprite* thisSprite = &sprites[0];
+		float x = rand() % SCREEN_WIDTH;
+		float y = rand() % SCREEN_HEIGHT;
+
+		C2D_SpriteFromSheet(&thisSprite->spr, spriteSheet, 0);
 		C2D_SpriteSetCenter(&thisSprite->spr, 0.5f, 0.5f);
-		C2D_SpriteSetPos(&thisSprite->spr, rand() % SCREEN_WIDTH, rand() % SCREEN_HEIGHT);
-		// C2D_SpriteSetRotation(&sprite->spr, C3D_Angle(rand()/(float)RAND_MAX));
-		thisSprite->dx = rand()*4.0f/RAND_MAX - 2.0f;
-		thisSprite->dy = rand()*4.0f/RAND_MAX - 2.0f;
-	}
+		C2D_SpriteSetPos(&thisSprite->spr, x, y);
+		thisSprite->x = x;
+		thisSprite->y = y;
 
 
 }
@@ -55,15 +77,18 @@ int main(int argc, char* argv[]) {
 	C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
 	C2D_Init(C2D_DEFAULT_MAX_OBJECTS);
 	C2D_Prepare();
-	// consoleInit(GFX_BOTTOM, NULL);
+	consoleInit(GFX_BOTTOM, NULL);
 
 	// Create screens
 	C3D_RenderTarget* top = C2D_CreateScreenTarget(GFX_TOP, GFX_LEFT);
-	C3D_RenderTarget* bottom = C2D_CreateScreenTarget(GFX_BOTTOM, GFX_LEFT);
+	// C3D_RenderTarget* bottom = C2D_CreateScreenTarget(GFX_BOTTOM, GFX_LEFT);
 
 	// Load graphics
 	spriteSheet = C2D_SpriteSheetLoad("romfs:/gfx/sprites.t3x");
-	if (!spriteSheet) svcBreak(USERBREAK_PANIC);
+	if (!spriteSheet) {
+		printf("No");
+		// svcBreak(USERBREAK_PANIC);
+	}
 
 	// Initialize sprites
 	initSprites();
@@ -82,7 +107,7 @@ int main(int argc, char* argv[]) {
 
 		// Render the scene
 		C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
-		C2D_TargetClear(top, C2D_Color32f(0.0f, 0.0f, 0.0f, 1.0f));
+		C2D_TargetClear(top, C2D_Color32f(0.2352941176f, 0.8392156863f, 0.8392156863f, 1.0f));
 		C2D_SceneBegin(top);
 
 		C2D_DrawSprite(&sprites[0].spr);
