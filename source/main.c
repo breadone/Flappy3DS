@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "sprites.h"
+
 #define MAX_SPRITES   768
 #define SCREEN_WIDTH  400
 #define SCREEN_HEIGHT 240
@@ -26,7 +28,7 @@ static Sprite sprites[MAX_SPRITES];
 //---------------------------------------------------------------------------------
 static void initSprites() {
 //---------------------------------------------------------------------------------
-	// size_t numImages = C2D_SpriteSheetCount(spriteSheet);
+	size_t numImages = C2D_SpriteSheetCount(spriteSheet);
 	// srand(time(NULL));
 
 	// for (size_t i = 0; i < MAX_SPRITES; i++)
@@ -56,7 +58,7 @@ static void initSprites() {
 	// }
 
 	// 17 sprites (i hope)
-	for (size_t i = 0; i < 17; i++) {
+	for (size_t i = 0; i < numImages; i++) {
 		Sprite* thisSprite = &sprites[i];
 		float x = rand() % SCREEN_WIDTH;
 		float y = rand() % SCREEN_HEIGHT;
@@ -94,16 +96,21 @@ int main(int argc, char* argv[]) {
 
     // Create screens
     C3D_RenderTarget* top = C2D_CreateScreenTarget(GFX_TOP, GFX_LEFT);
+    // C3D_RenderTarget* bottom = C2D_CreateScreenTarget(GFX_BOTTOM, GFX_LEFT);
 
     // Load graphics
     spriteSheet = C2D_SpriteSheetLoad("romfs:/gfx/sprites.t3x");
     if (!spriteSheet) {
-        printf("No");
-        // svcBreak(USERBREAK_PANIC);
+        svcBreak(USERBREAK_PANIC);
     }
 
-    // Initialize sprites
+	// Initialize sprites
     initSprites();
+
+	// set bg properties
+	C2D_SpriteSetPos(&sprites[SPR_BG].spr, 200, 120); // center bg
+	C2D_SpriteSetScale(&sprites[SPR_BG].spr, 2.7778, 2.7907);
+	
 
     // score sprite & int
     int score = 0;
@@ -116,19 +123,36 @@ int main(int argc, char* argv[]) {
 
         // Respond to user input
         u32 kDown = hidKeysDown();
+		u32 kHeld = hidKeysHeld();
         if (kDown & KEY_START)
             break; // break in order to return to hbmenu
-            
+
+		if (kHeld & KEY_LEFT) {
+			Sprite *this = &sprites[SPR_BIRD];
+			moveSprite(this, -1, 0);
+		}
+		if (kHeld & KEY_RIGHT) {
+			Sprite *this = &sprites[SPR_BIRD];
+			moveSprite(this, 1, 0);
+		}
+		if (kHeld & KEY_DOWN) {
+			Sprite *this = &sprites[SPR_BIRD];
+			moveSprite(this, 0, 1);
+		}
+		if (kHeld & KEY_UP) {
+			Sprite *this = &sprites[SPR_BIRD];
+			moveSprite(this, 0, -1);
+		}
 
         // Render the scene
         C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
-        C2D_TargetClear(top, C2D_Color32f(0.2352941176f, 0.8392156863f, 0.8392156863f, 1.0f));
         C2D_SceneBegin(top);
+		
 
-        C2D_SpriteSetPos(&sprites[12].spr, 200, 120); // center bg
-        C2D_DrawSprite(&sprites[12].spr);
+		C2D_DrawSprite(&sprites[SPR_BG].spr);
 
-        C2D_DrawSprite(&sprites[0].spr);
+		// C2D_SceneBegin(bottom);
+        C2D_DrawSprite(&sprites[SPR_BIRD].spr);
         C3D_FrameEnd(0);
 
         // // Flush and swap framebuffers
