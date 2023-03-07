@@ -18,7 +18,7 @@
 // Simple sprite struct
 typedef struct {
 	C2D_Sprite spr;
-	float x, y, w; // pos, rot
+	float x, y; // pos
 } Sprite;
 
 // init spritesheet
@@ -55,10 +55,6 @@ void moveSprite(Sprite *spr, s16 dx, s16 dy) {
 	C2D_SpriteSetPos(&spr->spr, spr->x, spr->y);
 }
 
-void rotateSprite(Sprite *spr, float dw) {
-
-}
-
 int main(int argc, char* argv[]) {
 
     // Init libs
@@ -83,7 +79,7 @@ int main(int argc, char* argv[]) {
     initSprites();
 
 	// init gravity calc vars
-	float a = 0.4f; // acceleration
+	float a = 0.4; // acceleration
 	float v = 0; // velocity
 
 	// set bg properties
@@ -101,7 +97,6 @@ int main(int argc, char* argv[]) {
 
         // Respond to user input
         u32 kDown = hidKeysDown();
-		u32 kHeld = hidKeysHeld();
         if (kDown & KEY_START)
             break; // break in order to return to hbmenu
 
@@ -109,6 +104,7 @@ int main(int argc, char* argv[]) {
 		// gravity calcs
 		v += a;
 		moveSprite(&sprites[SPR_BIRD], 0, v);
+		C2D_SpriteSetRotationDegrees(&sprites[SPR_BIRD].spr, v*9.8);
 
 		if (kDown & KEY_A) {
 			v = -5.5;
