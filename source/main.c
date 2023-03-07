@@ -14,8 +14,7 @@
 #define SCREEN_HEIGHT 240
 
 // Simple sprite struct
-typedef struct
-{
+typedef struct {
 	C2D_Sprite spr;
 	float x, y; // pos
 } Sprite;
@@ -56,16 +55,18 @@ static void initSprites() {
 	// 	thisSprite->y = y;
 	// }
 
-		Sprite* thisSprite = &sprites[0];
+	// 17 sprites (i hope)
+	for (size_t i = 0; i < 17; i++) {
+		Sprite* thisSprite = &sprites[i];
 		float x = rand() % SCREEN_WIDTH;
 		float y = rand() % SCREEN_HEIGHT;
 
-		C2D_SpriteFromSheet(&thisSprite->spr, spriteSheet, 0);
+		C2D_SpriteFromSheet(&thisSprite->spr, spriteSheet, i);
 		C2D_SpriteSetCenter(&thisSprite->spr, 0.5f, 0.5f);
 		C2D_SpriteSetPos(&thisSprite->spr, x, y);
 		thisSprite->x = x;
 		thisSprite->y = y;
-
+	}
 
 }
 
@@ -105,6 +106,9 @@ int main(int argc, char* argv[]) {
 	// Initialize sprites
 	initSprites();
 
+	// score sprite & int
+	int score = 0;
+	Sprite scoreSprite;
 
 	// Main loop
 	while (aptMainLoop())
