@@ -18,46 +18,16 @@
 // Simple sprite struct
 typedef struct {
 	C2D_Sprite spr;
-	float x, y; // pos
+	float x, y, w; // pos, rot
 } Sprite;
 
 // init spritesheet
 static C2D_SpriteSheet spriteSheet;
 static Sprite sprites[MAX_SPRITES];
 
-//---------------------------------------------------------------------------------
 static void initSprites() {
-//---------------------------------------------------------------------------------
 	size_t numImages = C2D_SpriteSheetCount(spriteSheet);
-	// srand(time(NULL));
 
-	// for (size_t i = 0; i < MAX_SPRITES; i++)
-	// {	
-	// 	Sprite* thisSprite = &sprites[i];
-
-	// 	// Random image, position, rotation and speed
-	// //  C2D_SpriteFromSheet(*Sprite, C2D_SpriteSheet, int);
-	// 	C2D_SpriteFromSheet(&thisSprite->spr, spriteSheet, i);
-	// 	C2D_SpriteSetCenter(&thisSprite->spr, 0.5f, 0.5f);
-	// 	C2D_SpriteSetPos(&thisSprite->spr, rand() % SCREEN_WIDTH, rand() % SCREEN_HEIGHT);
-	// 	// C2D_SpriteSetRotation(&sprite->spr, C3D_Angle(rand()/(float)RAND_MAX));
-	// 	thisSprite->dx = rand()*4.0f/RAND_MAX - 2.0f;
-	// 	thisSprite->dy = rand()*4.0f/RAND_MAX - 2.0f;
-	// }
-
-	// for (size_t i = 0; i < MAX_SPRITES; i++) {
-	// 	Sprite* thisSprite = &sprites[i];
-	// 	float x = rand() % SCREEN_WIDTH;
-	// 	float y = rand() % SCREEN_HEIGHT;
-
-	// 	C2D_SpriteFromSheet(&thisSprite->spr, spriteSheet, i);
-	// 	C2D_SpriteSetCenter(&thisSprite->spr, 0.5f, 0.5f);
-	// 	C2D_SpriteSetPos(&thisSprite->spr, x, y);
-	// 	thisSprite->x = x;
-	// 	thisSprite->y = y;
-	// }
-
-	// 17 sprites (i hope)
 	for (size_t i = 0; i < numImages; i++) {
 		Sprite* thisSprite = &sprites[i];
 		float x = rand() % SCREEN_WIDTH;
@@ -68,6 +38,7 @@ static void initSprites() {
 		C2D_SpriteSetPos(&thisSprite->spr, x, y);
 		thisSprite->x = x;
 		thisSprite->y = y;
+		thisSprite->w = 0;
 	}
 
 }
@@ -82,6 +53,10 @@ void moveSprite(Sprite *spr, s16 dx, s16 dy) {
 	spr->y += dy;
 
 	C2D_SpriteSetPos(&spr->spr, spr->x, spr->y);
+}
+
+void rotateSprite(Sprite *spr, float dw) {
+
 }
 
 int main(int argc, char* argv[]) {
@@ -107,6 +82,10 @@ int main(int argc, char* argv[]) {
 	// Initialize sprites
     initSprites();
 
+	// init gravity calc vars
+	float a = 0.4f; // acceleration
+	float v = 0; // velocity
+
 	// set bg properties
 	C2D_SpriteSetPos(&sprites[SPR_BG].spr, 200, 120); // center bg
 	C2D_SpriteSetScale(&sprites[SPR_BG].spr, 2.7778, 2.7907);
@@ -117,8 +96,7 @@ int main(int argc, char* argv[]) {
     Sprite scoreSprite;
 
     // Main loop
-    while (aptMainLoop())
-    {
+    while (aptMainLoop()) {
         hidScanInput();
 
         // Respond to user input
@@ -127,22 +105,16 @@ int main(int argc, char* argv[]) {
         if (kDown & KEY_START)
             break; // break in order to return to hbmenu
 
-		if (kHeld & KEY_LEFT) {
-			Sprite *this = &sprites[SPR_BIRD];
-			moveSprite(this, -1, 0);
+
+		// gravity calcs
+		v += a;
+		moveSprite(&sprites[SPR_BIRD], 0, v);
+
+		if (kDown & KEY_A) {
+			v = -5.5;
+			moveSprite(&sprites[SPR_BIRD], 0, v);
 		}
-		if (kHeld & KEY_RIGHT) {
-			Sprite *this = &sprites[SPR_BIRD];
-			moveSprite(this, 1, 0);
-		}
-		if (kHeld & KEY_DOWN) {
-			Sprite *this = &sprites[SPR_BIRD];
-			moveSprite(this, 0, 1);
-		}
-		if (kHeld & KEY_UP) {
-			Sprite *this = &sprites[SPR_BIRD];
-			moveSprite(this, 0, -1);
-		}
+
 
         // Render the scene
         C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
