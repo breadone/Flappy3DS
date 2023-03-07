@@ -30,8 +30,8 @@ static void initSprites() {
 
 	for (size_t i = 0; i < numImages; i++) {
 		Sprite* thisSprite = &sprites[i];
-		float x = rand() % SCREEN_WIDTH;
-		float y = rand() % SCREEN_HEIGHT;
+		float x = SCREEN_WIDTH / 4;
+		float y = SCREEN_HEIGHT / 3;
 
 		C2D_SpriteFromSheet(&thisSprite->spr, spriteSheet, i);
 		C2D_SpriteSetCenter(&thisSprite->spr, 0.5f, 0.5f);
@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
 
 	// set bg properties
 	C2D_SpriteSetPos(&sprites[SPR_BG].spr, 200, 120); // center bg
-	C2D_SpriteSetScale(&sprites[SPR_BG].spr, 2.7778, 2.7907);
+	C2D_SpriteSetScale(&sprites[SPR_BG].spr, 2.7778, 2.7907); // scale image to 400x240 (3ds screen res)
 	
 
     // score sprite & int
@@ -127,12 +127,6 @@ int main(int argc, char* argv[]) {
         C2D_DrawSprite(&sprites[SPR_BIRD].spr);
         C3D_FrameEnd(0);
 
-        // // Flush and swap framebuffers
-        // gfxFlushBuffers();
-        // gfxSwapBuffers();
-
-        // //Wait for VBlank
-        // gspWaitForVBlank();
     }
 
     // Delete graphics
