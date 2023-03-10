@@ -30,8 +30,8 @@ static void initSprites() {
 
 	for (size_t i = 0; i < numImages; i++) {
 		Sprite* thisSprite = &sprites[i];
-		float x = SCREEN_WIDTH / 4;
-		float y = SCREEN_HEIGHT / 3;
+		float x = SCREEN_WIDTH / 2;
+		float y = SCREEN_HEIGHT / 2;
 
 		C2D_SpriteFromSheet(&thisSprite->spr, spriteSheet, i);
 		C2D_SpriteSetCenter(&thisSprite->spr, 0.5f, 0.5f);
@@ -40,6 +40,13 @@ static void initSprites() {
 		thisSprite->y = y;
 	}
 
+    // set bird consts
+    C2D_SpriteSetPos(&sprites[SPR_BIRD].spr, SCREEN_WIDTH / 4, SCREEN_HEIGHT / 3);
+
+    // big number positions
+    for (size_t i = 1; i < 10; i++) {
+        C2D_SpriteSetPos(&sprites[i].spr, 80, 115); // a guess
+    }
 }
 
 void moveSprite(Sprite *spr, s16 dx, s16 dy) {
@@ -132,7 +139,7 @@ int main(int argc, char* argv[]) {
 
             C2D_TargetClear(bottom, C2D_Color32f(0.3294f, 0.7529f, 0.7882f, 1.0f));
             C2D_SceneBegin(bottom);
-            drawSprite(SPR_SCORECARD);
+            // drawSprite(SPR_SCORECARD);
         C3D_FrameEnd(0);
 
     }
