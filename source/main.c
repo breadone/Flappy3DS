@@ -38,7 +38,6 @@ static void initSprites() {
 		C2D_SpriteSetPos(&thisSprite->spr, x, y);
 		thisSprite->x = x;
 		thisSprite->y = y;
-		thisSprite->w = 0;
 	}
 
 }
@@ -55,6 +54,10 @@ void moveSprite(Sprite *spr, s16 dx, s16 dy) {
 	C2D_SpriteSetPos(&spr->spr, spr->x, spr->y);
 }
 
+void drawSprite(int id) {
+    C2D_DrawSprite(&sprites[id].spr);
+}
+
 int main(int argc, char* argv[]) {
 
     // Init libs
@@ -63,11 +66,11 @@ int main(int argc, char* argv[]) {
     C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
     C2D_Init(C2D_DEFAULT_MAX_OBJECTS);
     C2D_Prepare();
-    consoleInit(GFX_BOTTOM, NULL);
+    // consoleInit(GFX_BOTTOM, NULL);
 
     // Create screens
     C3D_RenderTarget* top = C2D_CreateScreenTarget(GFX_TOP, GFX_LEFT);
-    // C3D_RenderTarget* bottom = C2D_CreateScreenTarget(GFX_BOTTOM, GFX_LEFT);
+    C3D_RenderTarget* bottom = C2D_CreateScreenTarget(GFX_BOTTOM, GFX_LEFT);
 
     // Load graphics
     spriteSheet = C2D_SpriteSheetLoad("romfs:/gfx/sprites.t3x");
@@ -85,7 +88,13 @@ int main(int argc, char* argv[]) {
 	// set bg properties
 	C2D_SpriteSetPos(&sprites[SPR_BG].spr, 200, 120); // center bg
 	C2D_SpriteSetScale(&sprites[SPR_BG].spr, 2.7778, 2.7907); // scale image to 400x240 (3ds screen res)
-	
+    
+    // set bottom screen scorecard
+    C2D_SpriteSetCenter(&sprites[SPR_SCORECARD].spr, 0.0, 0.0);
+    C2D_SpriteSetPos(&sprites[SPR_SCORECARD].spr, 2, 55);
+    C2D_TargetClear(bottom, C2D_Color32f(0.3294f, 0.7529f, 0.7882f, 1.0f));
+    C2D_SceneBegin(bottom);
+    drawSprite(SPR_SCORECARD);
 
     // score sprite & int
     int score = 0;
@@ -109,18 +118,21 @@ int main(int argc, char* argv[]) {
 		if (kDown & KEY_A) {
 			v = -5.5;
 			moveSprite(&sprites[SPR_BIRD], 0, v);
+            // temp score = num of flaps
+            score++;
 		}
 
 
         // Render the scene
         C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
-        C2D_SceneBegin(top);
-		
+            C2D_TargetClear(top, C3D_CLEAR_COLOR);
+            C2D_SceneBegin(top);
+            drawSprite(SPR_BG);
+            drawSprite(SPR_BIRD);
 
-		C2D_DrawSprite(&sprites[SPR_BG].spr);
-
-		// C2D_SceneBegin(bottom);
-        C2D_DrawSprite(&sprites[SPR_BIRD].spr);
+            C2D_TargetClear(bottom, C2D_Color32f(0.3294f, 0.7529f, 0.7882f, 1.0f));
+            C2D_SceneBegin(bottom);
+            drawSprite(SPR_SCORECARD);
         C3D_FrameEnd(0);
 
     }
