@@ -1,6 +1,9 @@
-// Simple citro2d sprite drawing example
-// Images borrowed from:
-//   https://kenney.nl/assets/space-shooter-redux
+/*
+    Flappy Bird for 3DS
+
+    Created by breadone on 2023-03-05
+
+*/
 #include <citro2d.h>
 
 #include <assert.h>
@@ -8,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <limits.h>
 
 #include "sprites.h"
 
@@ -45,8 +49,12 @@ static void initSprites() {
 
     // big number positions
     for (size_t i = 1; i < 10; i++) {
-        C2D_SpriteSetPos(&sprites[i].spr, 80, 115); // a guess
+        C2D_SpriteSetPos(&sprites[i].spr, 260, 100); // a guess
     }
+
+    // set bottom screen scorecard
+    C2D_SpriteSetCenter(&sprites[SPR_SCORECARD].spr, 0.0, 0.0);
+    C2D_SpriteSetPos(&sprites[SPR_SCORECARD].spr, 2, 40);
 }
 
 void moveSprite(Sprite *spr, s16 dx, s16 dy) {
@@ -79,6 +87,15 @@ int main(int argc, char* argv[]) {
     C3D_RenderTarget* top = C2D_CreateScreenTarget(GFX_TOP, GFX_LEFT);
     C3D_RenderTarget* bottom = C2D_CreateScreenTarget(GFX_BOTTOM, GFX_LEFT);
 
+    // Load fonts and text
+    C2D_TextBuf g_staticBuf;
+    C2D_Text scoreText;
+    C2D_Font font;
+
+    g_staticBuf = C2D_TextBufNew(4096);
+    font = C2D_FontLoadSystem(CFG_REGION_EUR);
+    C2D_TextFontParse(&scoreText, font, g_staticBuf, "0");
+
     // Load graphics
     spriteSheet = C2D_SpriteSheetLoad("romfs:/gfx/sprites.t3x");
     if (!spriteSheet) {
@@ -95,17 +112,8 @@ int main(int argc, char* argv[]) {
 	// set bg properties
 	C2D_SpriteSetPos(&sprites[SPR_BG].spr, 200, 120); // center bg
 	C2D_SpriteSetScale(&sprites[SPR_BG].spr, 2.7778, 2.7907); // scale image to 400x240 (3ds screen res)
-    
-    // set bottom screen scorecard
-    C2D_SpriteSetCenter(&sprites[SPR_SCORECARD].spr, 0.0, 0.0);
-    C2D_SpriteSetPos(&sprites[SPR_SCORECARD].spr, 2, 55);
-    C2D_TargetClear(bottom, C2D_Color32f(0.3294f, 0.7529f, 0.7882f, 1.0f));
-    C2D_SceneBegin(bottom);
-    drawSprite(SPR_SCORECARD);
 
-    // score sprite & int
     int score = 0;
-    Sprite scoreSprite;
 
     // Main loop
     while (aptMainLoop()) {
@@ -129,6 +137,11 @@ int main(int argc, char* argv[]) {
             score++;
 		}
 
+        // make score text
+        char scoreString[(((sizeof score) * CHAR_BIT) + 2)/3 + 2];
+        sprintf(scoreString, "%d", score);
+        C2D_TextFontParse(&scoreText, font, g_staticBuf, scoreString);
+
 
         // Render the scene
         C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
@@ -139,7 +152,11 @@ int main(int argc, char* argv[]) {
 
             C2D_TargetClear(bottom, C2D_Color32f(0.3294f, 0.7529f, 0.7882f, 1.0f));
             C2D_SceneBegin(bottom);
-            // drawSprite(SPR_SCORECARD);
+            drawSprite(SPR_SCORECARD);
+            // C2D_DrawSprite(&scoreSprite->spr);
+            
+
+            C2D_DrawText(&scoreText, 0, 260, 100, 0.0f, 1, 1);
         C3D_FrameEnd(0);
 
     }
