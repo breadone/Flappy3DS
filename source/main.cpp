@@ -16,7 +16,7 @@
 #define MAX_SPRITES   768
 #define SCREEN_WIDTH  400
 #define SCREEN_HEIGHT 240
-#define NUM_PIPES 5
+#define NUM_PIPES 4
 
 // init spritesheet
 static C2D_SpriteSheet spriteSheet;
@@ -52,7 +52,7 @@ static void initSprites() {
     for (int i = 0; i < NUM_PIPES; i++) {
         memcpy(&pipes[i], &sprites[SPR_BOTHPIPES], sizeof(sprites[SPR_BOTHPIPES]));
         pipes[i].setCenter(0.5f, 0.5f);
-        pipes[i].setPosition(SCREEN_WIDTH + 8*i, rand() % SCREEN_HEIGHT + 20);
+        pipes[i].setPosition(SCREEN_WIDTH + 20 + i * (SCREEN_WIDTH/NUM_PIPES), (rand() % (SCREEN_HEIGHT-60)) + 60);
     }
 }
 
@@ -93,7 +93,7 @@ int main(int argc, char* argv[]) {
 	// init gravity calc vars
 	float a = 0.4; // acceleration
 	float v = 0; // velocity
-    float pipeSpeed = -1.2;
+    float pipeSpeed = -1;
 
 	// set bg properties
     sprites[SPR_BG].setPosition(200, 120);
@@ -121,16 +121,21 @@ int main(int argc, char* argv[]) {
 		if (kDown & KEY_A) {
 			v = -5.5;
             sprites[SPR_BIRD].move(0, v);
-            // temp score = num of flaps
-            score++;
 		}
 
         for (int i = 0; i < NUM_PIPES; i++) {
-            pipes[i].move(pipeSpeed, 0, true);            
+            pipes[i].move(pipeSpeed, 0, true);
 
-            if (pipes[i].getPosX() < -10) {
-                pipes[i].setPosition(SCREEN_WIDTH, rand() % SCREEN_HEIGHT);
+            // inc score
+            if (pipes[i].getPosX() == sprites[SPR_BIRD].getPosX())
+                score++;          
+
+            // send pipes back to front of screen
+            if (pipes[i].getPosX() < -(SCREEN_WIDTH/NUM_PIPES)) {
+                pipes[i].setPosition(SCREEN_WIDTH, (rand() % (SCREEN_HEIGHT-60)) + 60);
             }
+
+            
         }
 
        
