@@ -23,6 +23,8 @@ public:
 
     float getPosY();
 
+    float* getCenter();
+
     C2D_Sprite* getSpr();
 
     void setSpr(C2D_Sprite* newSpr);
@@ -31,6 +33,7 @@ public:
 
 private:
     float x, y;
+    float center[2];
 };
 
 #endif

@@ -37,7 +37,13 @@ void Sprite::move(float dx, float dy, bool overrideOOB) {
 }
 
 void Sprite::setCenter(float x, float y) {
+    this->center[0] = x; this->center[1] = y;
+
     C2D_SpriteSetCenter(&this->spr, x, y);
+}
+
+float* Sprite::getCenter() {
+    return this->center;
 }
 
 void Sprite::draw() {

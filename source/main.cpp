@@ -56,6 +56,12 @@ static void initSprites() {
     }
 }
 
+void introScene();
+void gameScene();
+void gameOverScene();
+
+void (*() currentPhase = &gameScene;
+
 
 int main(int argc, char* argv[]) {
 
@@ -100,6 +106,7 @@ int main(int argc, char* argv[]) {
 	C2D_SpriteSetScale(&sprites[SPR_BG].spr, 2.7778, 2.7907); // scale image to 400x240 (3ds screen res)
 
     size_t score = 0;
+    bool gameOver = false;
 
     // Main loop
     while (aptMainLoop()) {
@@ -118,7 +125,7 @@ int main(int argc, char* argv[]) {
 
         
 
-		if (kDown & KEY_A) {
+		if (!gameOver && (kDown & KEY_A)) {
 			v = -5.5;
             sprites[SPR_BIRD].move(0, v);
 		}
@@ -126,8 +133,18 @@ int main(int argc, char* argv[]) {
         for (int i = 0; i < NUM_PIPES; i++) {
             pipes[i].move(pipeSpeed, 0, true);
 
+            // collision detection
+            if (pipes[i].getPosX() == sprites[SPR_BIRD].getPosX() && 
+                (sprites[SPR_BIRD].getPosY() > pipes[i].getPosY() + 41.5 ||
+                sprites[SPR_BIRD].getPosY() < pipes[i].getPosY() - 41.5))
+            {
+                gameOver = true;
+                break;
+
+            }
+
             // inc score
-            if (pipes[i].getPosX() == sprites[SPR_BIRD].getPosX())
+            if (!gameOver && (pipes[i].getPosX() == sprites[SPR_BIRD].getPosX()))
                 score++;          
 
             // send pipes back to front of screen
@@ -160,10 +177,7 @@ int main(int argc, char* argv[]) {
 
             C2D_TargetClear(bottom, C2D_Color32f(0.3294f, 0.7529f, 0.7882f, 1.0f));
             C2D_SceneBegin(bottom);
-            // drawSprite(SPR_SCORECARD);
             sprites[SPR_SCORECARD].draw();
-            // C2D_DrawSprite(&scoreSprite->spr);
-            
 
             C2D_DrawText(&scoreText, 0, 240, 88, 0.0f, 0.9f, 0.9f);
         C3D_FrameEnd(0);
