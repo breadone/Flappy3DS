@@ -1,15 +1,5 @@
 --atlas -f rgba8888 -z auto
 bird.png
-big0.png
-big1.png
-big2.png
-big3.png
-big4.png
-big5.png
-big6.png
-big7.png
-big8.png
-big9.png
 bg.png
 floor.png
 logo.png

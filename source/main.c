@@ -19,7 +19,7 @@
 #define SCREEN_WIDTH  400
 #define SCREEN_HEIGHT 240
 
-// Simple sprite struct
+
 typedef struct {
 	C2D_Sprite spr;
 	float x, y; // pos
@@ -46,11 +46,6 @@ static void initSprites() {
 
     // set bird consts
     C2D_SpriteSetPos(&sprites[SPR_BIRD].spr, SCREEN_WIDTH / 4, SCREEN_HEIGHT / 3);
-
-    // big number positions
-    for (size_t i = 1; i < 10; i++) {
-        C2D_SpriteSetPos(&sprites[i].spr, 260, 100); // a guess
-    }
 
     // set bottom screen scorecard
     C2D_SpriteSetCenter(&sprites[SPR_SCORECARD].spr, 0.0, 0.0);
@@ -93,8 +88,9 @@ int main(int argc, char* argv[]) {
     C2D_Font font;
 
     g_staticBuf = C2D_TextBufNew(4096);
-    font = C2D_FontLoadSystem(CFG_REGION_EUR);
+    font = C2D_FontLoad("romfs:/fbfont.bcfnt");
     C2D_TextFontParse(&scoreText, font, g_staticBuf, "0");
+    C2D_TextOptimize(&scoreText);
 
     // Load graphics
     spriteSheet = C2D_SpriteSheetLoad("romfs:/gfx/sprites.t3x");
@@ -141,6 +137,7 @@ int main(int argc, char* argv[]) {
         char scoreString[(((sizeof score) * CHAR_BIT) + 2)/3 + 2];
         sprintf(scoreString, "%d", score);
         C2D_TextFontParse(&scoreText, font, g_staticBuf, scoreString);
+        C2D_TextOptimize(&scoreText);
 
 
         // Render the scene
@@ -156,13 +153,16 @@ int main(int argc, char* argv[]) {
             // C2D_DrawSprite(&scoreSprite->spr);
             
 
-            C2D_DrawText(&scoreText, 0, 260, 100, 0.0f, 1, 1);
+            C2D_DrawText(&scoreText, 0, 255, 90, 0.0f, 1.0f, 1.0f);
         C3D_FrameEnd(0);
 
+        
     }
 
     // Delete graphics
     C2D_SpriteSheetFree(spriteSheet);
+    C2D_TextBufDelete(g_staticBuf);
+    C2D_FontFree(font);
 
     // Deinit libs
     C2D_Fini();
