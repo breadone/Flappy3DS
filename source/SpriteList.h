@@ -12,5 +12,6 @@
 #define SPR_PIPETOP 5
 
 #define SPR_SCORECARD 6
+#define SPR_BOTHPIPES 7
 
 #endif

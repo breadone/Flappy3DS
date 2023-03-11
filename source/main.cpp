@@ -7,6 +7,7 @@
 #include <citro2d.h>
 
 #include <stdlib.h>
+#include <time.h>
 #include <limits.h>
 #include "Sprite.hpp"
 
@@ -15,13 +16,15 @@
 #define MAX_SPRITES   768
 #define SCREEN_WIDTH  400
 #define SCREEN_HEIGHT 240
-
+#define NUM_PIPES 5
 
 // init spritesheet
 static C2D_SpriteSheet spriteSheet;
 Sprite sprites[MAX_SPRITES];
+Sprite pipes[NUM_PIPES];
 
 static void initSprites() {
+    srand(time(NULL));
 	size_t numImages = C2D_SpriteSheetCount(spriteSheet);
 
 	for (size_t i = 0; i < numImages; i++) {
@@ -29,14 +32,13 @@ static void initSprites() {
 		float x = SCREEN_WIDTH / 2;
 		float y = SCREEN_HEIGHT / 2;
 
-		C2D_SpriteFromSheet(thisSprite->spr, spriteSheet, i);
-		C2D_SpriteSetCenter(thisSprite->spr, 0.5f, 0.5f);
+		C2D_SpriteFromSheet(&thisSprite->spr, spriteSheet, i);
+		C2D_SpriteSetCenter(&thisSprite->spr, 0.5f, 0.5f);
         thisSprite->setPosition(x, y);
 	}
 
     // set bird consts
     sprites[SPR_BIRD].setPosition(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 3);
-    
 
     // set bottom screen scorecard
     sprites[SPR_SCORECARD].setCenter(0.0, 0.0);
@@ -45,6 +47,13 @@ static void initSprites() {
 
     sprites[SPR_PIPETOP].setPosition(280, 3);
     sprites[SPR_PIPEBOTTOM].setPosition(280, 280);
+
+    // if theres a better way to do this,,, i dont know it
+    for (int i = 0; i < NUM_PIPES; i++) {
+        memcpy(&pipes[i], &sprites[SPR_BOTHPIPES], sizeof(sprites[SPR_BOTHPIPES]));
+        pipes[i].setCenter(0.5f, 0.5f);
+        pipes[i].setPosition(SCREEN_WIDTH + 8*i, rand() % SCREEN_HEIGHT + 20);
+    }
 }
 
 
@@ -88,7 +97,7 @@ int main(int argc, char* argv[]) {
 
 	// set bg properties
     sprites[SPR_BG].setPosition(200, 120);
-	C2D_SpriteSetScale(sprites[SPR_BG].spr, 2.7778, 2.7907); // scale image to 400x240 (3ds screen res)
+	C2D_SpriteSetScale(&sprites[SPR_BG].spr, 2.7778, 2.7907); // scale image to 400x240 (3ds screen res)
 
     size_t score = 0;
 
@@ -105,7 +114,7 @@ int main(int argc, char* argv[]) {
 		// gravity calcs
 		v += a;
         sprites[SPR_BIRD].move(0, v);
-		C2D_SpriteSetRotationDegrees(sprites[SPR_BIRD].spr, v*9.8);
+		C2D_SpriteSetRotationDegrees(&sprites[SPR_BIRD].spr, v*9.8);
 
         
 
@@ -116,13 +125,15 @@ int main(int argc, char* argv[]) {
             score++;
 		}
 
-        sprites[SPR_PIPETOP].move(pipeSpeed, 0, true);
-        sprites[SPR_PIPEBOTTOM].move(pipeSpeed, 0, true);
+        for (int i = 0; i < NUM_PIPES; i++) {
+            pipes[i].move(pipeSpeed, 0, true);            
 
-        if (sprites[SPR_PIPETOP].getPosX() < -10) {
-            sprites[SPR_PIPETOP].setPosition(SCREEN_WIDTH, 3);
-            sprites[SPR_PIPEBOTTOM].setPosition(SCREEN_WIDTH, 280);
+            if (pipes[i].getPosX() < -10) {
+                pipes[i].setPosition(SCREEN_WIDTH, rand() % SCREEN_HEIGHT);
+            }
         }
+
+       
 
         // make score text
         char scoreString[(((sizeof score) * CHAR_BIT) + 2)/3 + 2];
@@ -138,8 +149,9 @@ int main(int argc, char* argv[]) {
             sprites[SPR_BG].draw();
             sprites[SPR_BIRD].draw();
 
-            sprites[SPR_PIPETOP].draw();
-            sprites[SPR_PIPEBOTTOM].draw();
+            for (int i = 0; i < NUM_PIPES; i++) {
+                pipes[i].draw();
+            }
 
             C2D_TargetClear(bottom, C2D_Color32f(0.3294f, 0.7529f, 0.7882f, 1.0f));
             C2D_SceneBegin(bottom);

@@ -27,7 +27,7 @@ public:
 
     void setSpr(C2D_Sprite* newSpr);
 
-    C2D_Sprite* spr;    
+    C2D_Sprite spr;    
 
 private:
     float x, y;
