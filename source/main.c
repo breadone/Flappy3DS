@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
     C2D_Font font;
 
     g_staticBuf = C2D_TextBufNew(4096);
-    font = C2D_FontLoad("romfs:/fbfont.bcfnt");
+    font = C2D_FontLoad("romfs:/gfx/fbfont.bcfnt");
     C2D_TextFontParse(&scoreText, font, g_staticBuf, "0");
     C2D_TextOptimize(&scoreText);
 
@@ -109,7 +109,7 @@ int main(int argc, char* argv[]) {
 	C2D_SpriteSetPos(&sprites[SPR_BG].spr, 200, 120); // center bg
 	C2D_SpriteSetScale(&sprites[SPR_BG].spr, 2.7778, 2.7907); // scale image to 400x240 (3ds screen res)
 
-    int score = 0;
+    size_t score = 0;
 
     // Main loop
     while (aptMainLoop()) {
@@ -153,7 +153,7 @@ int main(int argc, char* argv[]) {
             // C2D_DrawSprite(&scoreSprite->spr);
             
 
-            C2D_DrawText(&scoreText, 0, 255, 90, 0.0f, 1.0f, 1.0f);
+            C2D_DrawText(&scoreText, 0, 240, 88, 0.0f, 0.9f, 0.9f);
         C3D_FrameEnd(0);
 
         
