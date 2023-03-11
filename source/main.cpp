@@ -16,7 +16,7 @@
 #define MAX_SPRITES   768
 #define SCREEN_WIDTH  400
 #define SCREEN_HEIGHT 240
-#define NUM_PIPES 4
+#define NUM_PIPES 5
 
 // init spritesheet
 static C2D_SpriteSheet spriteSheet;
@@ -52,7 +52,7 @@ static void initSprites() {
     for (int i = 0; i < NUM_PIPES; i++) {
         memcpy(&pipes[i], &sprites[SPR_BOTHPIPES], sizeof(sprites[SPR_BOTHPIPES]));
         pipes[i].setCenter(0.5f, 0.5f);
-        pipes[i].setPosition(SCREEN_WIDTH + 20 + i * (SCREEN_WIDTH/NUM_PIPES), (rand() % (SCREEN_HEIGHT-60)) + 60);
+        pipes[i].setPosition(SCREEN_WIDTH + 40 + i * (100), (rand() % 150) + 50);
     }
 }
 
@@ -132,7 +132,7 @@ int main(int argc, char* argv[]) {
 
             // send pipes back to front of screen
             if (pipes[i].getPosX() < -(SCREEN_WIDTH/NUM_PIPES)) {
-                pipes[i].setPosition(SCREEN_WIDTH, (rand() % (SCREEN_HEIGHT-60)) + 60);
+                pipes[i].setPosition(SCREEN_WIDTH, (rand() % 150) + 50);
             }
 
             
