@@ -13,7 +13,7 @@ public:
 
     void setPosition(float x, float y);
 
-    void move(float dx, float dy);
+    void move(float dx, float dy, bool overrideOOB=false);
 
     void setCenter(float x, float y);
 

@@ -1,4 +1,4 @@
-#include "Sprite.h"
+#include "Sprite.hpp"
 
 Sprite::Sprite() {
     // C2D_SpriteSetCenter(&this->spr, 0.5f, 0.5f);
@@ -20,10 +20,15 @@ void Sprite::setPosition(float x, float y) {
     C2D_SpriteSetPos(this->spr, x, y);
 }
 
-void Sprite::move(float dx, float dy) {
-    if (this->x >= 400 || this->x < 1 || this->y >= 240 || this->x < 1) {
-		return;
+void Sprite::move(float dx, float dy, bool overrideOOB) {
+    if (!overrideOOB) {
+        // make sure translate doesnt move to OOB
+        const float newX = this->x + dx;
+        const float newY = this->y + dy;
+        if (!((unsigned)(newX-1) <= 398 && (unsigned)(newY-1) <= 238)) {
+            return;
 	}
+    }
 
 	this->x += dx;
 	this->y += dy;

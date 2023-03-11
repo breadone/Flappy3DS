@@ -8,7 +8,7 @@
 
 #include <stdlib.h>
 #include <limits.h>
-#include "Sprite.h"
+#include "Sprite.hpp"
 
 #include "SpriteList.h"
 
@@ -43,8 +43,8 @@ static void initSprites() {
 
     sprites[SPR_SCORECARD].setPosition(2, 40);
 
-    sprites[SPR_PIPETOP].setPosition(280, 14);
-    sprites[SPR_PIPEBOTTOM].setPosition(280, 200);
+    sprites[SPR_PIPETOP].setPosition(280, 3);
+    sprites[SPR_PIPEBOTTOM].setPosition(280, 280);
 }
 
 
@@ -106,8 +106,8 @@ int main(int argc, char* argv[]) {
         sprites[SPR_BIRD].move(0, v);
 		C2D_SpriteSetRotationDegrees(sprites[SPR_BIRD].spr, v*9.8);
 
-        sprites[SPR_PIPETOP].move(-0.2, 0);
-        sprites[SPR_PIPEBOTTOM].move(-0.2, 0);
+        sprites[SPR_PIPETOP].move(-3, 0, true);
+        sprites[SPR_PIPEBOTTOM].move(-3, 0, true);
 
 		if (kDown & KEY_A) {
 			v = -5.5;
@@ -128,13 +128,11 @@ int main(int argc, char* argv[]) {
         C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
             C2D_TargetClear(top, C3D_CLEAR_COLOR);
             C2D_SceneBegin(top);
-            // drawSprite(SPR_BG);
-            // drawSprite(SPR_BIRD);
             sprites[SPR_BG].draw();
             sprites[SPR_BIRD].draw();
 
-            // drawSprite(SPR_PIPEBOTTOM);
-            // drawSprite(SPR_PIPETOP);
+            sprites[SPR_PIPETOP].draw();
+            sprites[SPR_PIPEBOTTOM].draw();
 
             C2D_TargetClear(bottom, C2D_Color32f(0.3294f, 0.7529f, 0.7882f, 1.0f));
             C2D_SceneBegin(bottom);
