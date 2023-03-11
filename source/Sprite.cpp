@@ -27,7 +27,7 @@ void Sprite::move(float dx, float dy, bool overrideOOB) {
         const float newY = this->y + dy;
         if (!((unsigned)(newX-1) <= 398 && (unsigned)(newY-1) <= 238)) {
             return;
-	}
+	    }
     }
 
 	this->x += dx;

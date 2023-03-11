@@ -84,6 +84,7 @@ int main(int argc, char* argv[]) {
 	// init gravity calc vars
 	float a = 0.4; // acceleration
 	float v = 0; // velocity
+    float pipeSpeed = -1.2;
 
 	// set bg properties
     sprites[SPR_BG].setPosition(200, 120);
@@ -106,16 +107,22 @@ int main(int argc, char* argv[]) {
         sprites[SPR_BIRD].move(0, v);
 		C2D_SpriteSetRotationDegrees(sprites[SPR_BIRD].spr, v*9.8);
 
-        sprites[SPR_PIPETOP].move(-3, 0, true);
-        sprites[SPR_PIPEBOTTOM].move(-3, 0, true);
+        
 
 		if (kDown & KEY_A) {
 			v = -5.5;
-			// moveSprite(&sprites[SPR_BIRD], 0, v);
             sprites[SPR_BIRD].move(0, v);
             // temp score = num of flaps
             score++;
 		}
+
+        sprites[SPR_PIPETOP].move(pipeSpeed, 0, true);
+        sprites[SPR_PIPEBOTTOM].move(pipeSpeed, 0, true);
+
+        if (sprites[SPR_PIPETOP].getPosX() < -10) {
+            sprites[SPR_PIPETOP].setPosition(SCREEN_WIDTH, 3);
+            sprites[SPR_PIPEBOTTOM].setPosition(SCREEN_WIDTH, 280);
+        }
 
         // make score text
         char scoreString[(((sizeof score) * CHAR_BIT) + 2)/3 + 2];
