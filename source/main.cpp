@@ -39,6 +39,7 @@ static void initSprites() {
 
     // set bird consts
     sprites[SPR_BIRD].setPosition(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 3);
+    sprites[SPR_BIRD].setHitbox(17, 12);
 
     // set bottom screen scorecard
     sprites[SPR_SCORECARD].setCenter(0.0, 0.0);
@@ -53,6 +54,7 @@ static void initSprites() {
         memcpy(&pipes[i], &sprites[SPR_BOTHPIPES], sizeof(sprites[SPR_BOTHPIPES]));
         pipes[i].setCenter(0.5f, 0.5f);
         pipes[i].setPosition(SCREEN_WIDTH + 40 + i * (100), (rand() % 150) + 50);
+        pipes[i].setHitbox(26, 403);
     }
 }
 
@@ -60,7 +62,7 @@ void introScene();
 void gameScene();
 void gameOverScene();
 
-void (*() currentPhase = &gameScene;
+// void (*currentScene)(C3D_RenderTarget*, C3D_RenderTarget*) = &gameScene;
 
 
 int main(int argc, char* argv[]) {
@@ -117,42 +119,44 @@ int main(int argc, char* argv[]) {
         if (kDown & KEY_START)
             break; // break in order to return to hbmenu
 
+        if (kDown & KEY_SELECT)
+            main(0, 0); // reset
+
 
 		// gravity calcs
 		v += a;
         sprites[SPR_BIRD].move(0, v);
 		C2D_SpriteSetRotationDegrees(&sprites[SPR_BIRD].spr, v*9.8);
 
-        
-
 		if (!gameOver && (kDown & KEY_A)) {
 			v = -5.5;
-            sprites[SPR_BIRD].move(0, v);
+            sprites[SPR_BIRD].move(0, v, true);
 		}
 
-        for (int i = 0; i < NUM_PIPES; i++) {
-            pipes[i].move(pipeSpeed, 0, true);
+        // bird hitting ground is game over
+        if (sprites[SPR_BIRD].getPosY() == SCREEN_HEIGHT) {
+            gameOver = true;
+        }
 
-            // collision detection
-            if (pipes[i].getPosX() == sprites[SPR_BIRD].getPosX() && 
-                (sprites[SPR_BIRD].getPosY() > pipes[i].getPosY() + 41.5 ||
-                sprites[SPR_BIRD].getPosY() < pipes[i].getPosY() - 41.5))
-            {
-                gameOver = true;
-                break;
+        if (!gameOver) {
+            for (int i = 0; i < NUM_PIPES; i++) {
+                pipes[i].move(pipeSpeed, 0, true);
 
+                // collision detection
+                if (pipes[i].isCollidingWith(sprites[SPR_BIRD])) {
+                    gameOver = true;
+                    break;
+                }
+
+                // inc score
+                if (pipes[i].getPosX() == sprites[SPR_BIRD].getPosX())
+                    score++;          
+
+                // send pipes back to front of screen
+                if (pipes[i].getPosX() < -(SCREEN_WIDTH/NUM_PIPES)) {
+                    pipes[i].setPosition(SCREEN_WIDTH, (rand() % 150) + 50);
+                }    
             }
-
-            // inc score
-            if (!gameOver && (pipes[i].getPosX() == sprites[SPR_BIRD].getPosX()))
-                score++;          
-
-            // send pipes back to front of screen
-            if (pipes[i].getPosX() < -(SCREEN_WIDTH/NUM_PIPES)) {
-                pipes[i].setPosition(SCREEN_WIDTH, (rand() % 150) + 50);
-            }
-
-            
         }
 
        

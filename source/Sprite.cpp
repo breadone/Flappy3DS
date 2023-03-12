@@ -42,6 +42,36 @@ void Sprite::setCenter(float x, float y) {
     C2D_SpriteSetCenter(&this->spr, x, y);
 }
 
+void Sprite::setHitbox(float w, float h) {
+    this->width = w; this->height = h;
+}
+
+bool Sprite::isCollidingWith(Sprite &other) {
+    // hitbox not set
+    if (this->width == 0 && this->height == 0) return false;
+
+    const float thisHalfWidth = this->width/2;
+    const float otherHalfWidth = other.width/2;
+    const float thisHalfHeight = this->height/2;
+    const float otherHalfHeight = other.height/2;
+
+    // check x collision
+    if (this->x + thisHalfWidth >= other.x - otherHalfWidth ||
+        this->x - thisHalfWidth <= other.x + otherHalfWidth
+    ) {
+        return true;
+    }
+
+    // check y collision
+    if (this->y + thisHalfHeight >= other.y - otherHalfHeight ||
+        this->y - thisHalfHeight <= other.y + otherHalfHeight
+    ) {
+        return true;
+    }
+
+    return false;
+}
+
 float* Sprite::getCenter() {
     return this->center;
 }

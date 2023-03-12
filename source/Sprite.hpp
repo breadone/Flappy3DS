@@ -17,6 +17,10 @@ public:
 
     void setCenter(float x, float y);
 
+    void setHitbox(float width, float height);
+
+    bool isCollidingWith(Sprite &other);
+
     void draw();
 
     float getPosX();
@@ -33,6 +37,7 @@ public:
 
 private:
     float x, y;
+    float width, height; // for hitbox
     float center[2];
 };
 
