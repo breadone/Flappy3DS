@@ -33,6 +33,8 @@ public:
 
     void setSpr(C2D_Sprite* newSpr);
 
+    void copy(Sprite* other);
+
     C2D_Sprite spr;    
 
 private:

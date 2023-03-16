@@ -119,9 +119,6 @@ int main(int argc, char* argv[]) {
         if (kDown & KEY_START)
             break; // break in order to return to hbmenu
 
-        if (kDown & KEY_SELECT)
-            main(0, 0); // reset
-
 
 		// gravity calcs
 		v += a;

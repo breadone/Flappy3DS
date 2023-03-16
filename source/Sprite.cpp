@@ -95,3 +95,12 @@ C2D_Sprite* Sprite::getSpr() {
 void Sprite::setSpr(C2D_Sprite* newSpr) {
     this->spr = *newSpr;
 }
+
+void Sprite::copy(Sprite* other) {
+    memcpy(&other->x, &this->x, sizeof(this->x));
+    memcpy(&other->y, &this->y, sizeof(this->y));
+    memcpy(&other->width, &this->width, sizeof(this->width));
+    memcpy(&other->height, &this->height, sizeof(this->height));
+    memcpy(other->center, this->center, sizeof(this->center));
+    memcpy(&other->spr, &this->spr, sizeof(this->spr));
+}
