@@ -185,7 +185,6 @@ int main(int argc, char* argv[]) {
 
         
     }
-
     // Delete graphics
     C2D_SpriteSheetFree(spriteSheet);
     C2D_TextBufDelete(g_staticBuf);
