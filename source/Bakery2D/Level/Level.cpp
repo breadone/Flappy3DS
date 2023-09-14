@@ -35,5 +35,5 @@ void Level::run() {
 }   
 
 void Level::cleanup() {
-    C2D_SpriteSheetFree(spriteSheet);
+    C2D_SpriteSheetFree(spritesheet);
 }
