@@ -10,7 +10,7 @@
 #include <time.h>
 #include <limits.h>
 
-#include "MainLevel.hpp"
+#include "MainLevel.cpp"
 
 int main(int argc, char* argv[]) {
 
