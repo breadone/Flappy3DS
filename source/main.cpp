@@ -9,10 +9,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <limits.h>
-#include "Sprite.hpp"
 
-#include "SpriteList.h"
-#include "scenes/MainLevel.cpp"
+#include "MainLevel.hpp"
 
 int main(int argc, char* argv[]) {
 

@@ -1,7 +1,6 @@
 #include "Level.hpp"
 
-template <typename T>
-Level::Level(T* levelName, char* spritesheetPath, C3D_RenderTarget* top, C3D_RenderTarget* bottom) : level(levelName), top(top), bottom(bottom) {
+Level::Level(Level* levelName, char* spritesheetPath, C3D_RenderTarget* top, C3D_RenderTarget* bottom) : level(levelName), top(top), bottom(bottom) {
     this->spritesheet = C2D_SpriteSheetLoad(spritesheetPath);
     size_t numImages = C2D_SpriteSheetCount(spritesheet);
 
