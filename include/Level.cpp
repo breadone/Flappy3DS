@@ -33,6 +33,14 @@ void Level::run() {
     C3D_FrameEnd(0);
 }   
 
+void Level::exit() {
+    this->isActive = false;
+}
+
+bool Level::active() {
+    this->isActive;// && aptMainLoop();
+}
+
 void Level::cleanup() {
     C2D_SpriteSheetFree(spritesheet);
 }

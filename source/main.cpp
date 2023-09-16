@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
     level = game;
 
     // Main loop
-    while (aptMainLoop()) {
+    while (aptMainLoop() && level->isActive) {
         level->run();
     }
     

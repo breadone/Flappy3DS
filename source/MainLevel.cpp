@@ -1,4 +1,5 @@
 #include "Level.hpp"
+#include <algorithm>
 
 #define SPR_BIRD 0
 
@@ -70,15 +71,16 @@ struct MainLevel: Level {
         // Respond to user input
         u32 kDown = hidKeysDown();
         if (kDown & KEY_START)
-            svcBreak(USERBREAK_USER); // break in order to return to hbmenu
+            // svcExitProcess(); // break in order to return to hbmenu
+            this->exit();
 
 
         // gravity calcs
         v += a;
         sprites[SPR_BIRD].move(0, v);
-        C2D_SpriteSetRotationDegrees(&sprites[SPR_BIRD].spr, v*9.8);
+        C2D_SpriteSetRotationDegrees(&sprites[SPR_BIRD].spr, std::min(v*9.8, 90.0));
 
-        if (!gameOver && (kDown & KEY_A)) {
+        if (kDown & KEY_A) {
             v = -5.5;
             sprites[SPR_BIRD].move(0, v, true);
         }
@@ -88,15 +90,15 @@ struct MainLevel: Level {
             gameOver = true;
         }
 
-        if (!gameOver) {
+        // if (!gameOver) {
             for (int i = 0; i < NUM_PIPES; i++) {
                 pipes[i].move(pipeSpeed, 0, true);
 
                 // collision detection
-                if (pipes[i].isCollidingWith(sprites[SPR_BIRD])) {
-                    gameOver = true;
-                    break;
-                }
+                // if (pipes[i].isCollidingWith(sprites[SPR_BIRD])) {
+                //     gameOver = true;
+                //     break;
+                // }
 
                 // inc score
                 if (pipes[i].getPosX() == sprites[SPR_BIRD].getPosX())
@@ -107,13 +109,13 @@ struct MainLevel: Level {
                     pipes[i].setPosition(SCREEN_WIDTH, (rand() % 150) + 50);
                 }    
             }
-        }
+        // }
 
         // make score text
-        // char scoreString[(((sizeof score) * CHAR_BIT) + 2)/3 + 2];
-        // sprintf(scoreString, "%d", score);
-        // C2D_TextFontParse(&scoreText, font, g_staticBuf, scoreString);
-        // C2D_TextOptimize(&scoreText);
+        char scoreString[(((sizeof score) * 8) + 2)/3 + 2];
+        sprintf(scoreString, "%d", score);
+        C2D_TextFontParse(&scoreText, font, g_staticBuf, scoreString);
+        C2D_TextOptimize(&scoreText);
     }
 
     void drawTop() {
@@ -127,7 +129,7 @@ struct MainLevel: Level {
 
     void drawBottom() {
         sprites[SPR_SCORECARD].draw();
-        // C2D_DrawText(&scoreText, 0, 240, 88, 0.0f, 0.9f, 0.9f);
+        C2D_DrawText(&scoreText, 0, 240, 88, 0.0f, 0.9f, 0.9f);
     }
 
     void cleanup() {

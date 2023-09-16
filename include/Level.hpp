@@ -58,6 +58,7 @@ public:
     C3D_RenderTarget* bottom;
     Level* level;
     bool hasBeenSetup = false;
+    bool isActive = true;
 
     virtual void setup() = 0;
     virtual void update() = 0;
@@ -69,6 +70,12 @@ public:
 
     // sets up the level if it hasnt been, then updates the logic, and draws the frame
     void run();
+
+    // stops the current level, mostly to be used to exit to hbmenu (see examples)
+    void exit();
+
+    // returns the status of the level, whether it's been exited or not
+    bool active(); 
 
     virtual void cleanup() = 0;
 };
